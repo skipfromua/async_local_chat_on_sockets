@@ -1,8 +1,10 @@
 import socket
 from threading import Thread
+import sys
 
+print('You are connected to: {}:{}'.format(sys.argv[1], sys.argv[2]))
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-sock.connect(('127.0.0.1', 5000))
+sock.connect((sys.argv[1], int(sys.argv[2])))
 
 
 def send_message():
