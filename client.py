@@ -11,6 +11,7 @@ def send_message():
         sock.send(message)
 
 
+
 def recieve_message():
     while True:
         result = sock.recv(4096)
@@ -19,5 +20,6 @@ def recieve_message():
 
 t1 = Thread(target=send_message)
 t2 = Thread(target=recieve_message)
+
 t1.start()
 t2.start()

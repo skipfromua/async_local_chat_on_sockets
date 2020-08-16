@@ -10,6 +10,7 @@ clients = []
 
 
 async def check_new_connections():
+    print('Server is up and waiting for connections...')
     while True:
         try:
             client, addr = sock.accept()
@@ -20,6 +21,7 @@ async def check_new_connections():
 
 
 async def check_new_requests():
+    errors_cycle_offset = 0
     while True:
         if not clients:
             await asyncio.sleep(0)
@@ -32,11 +34,34 @@ async def check_new_requests():
                 continue
             for answer_for_client, addr in clients:
                 if client_addr != addr:
-                    answer_for_client.send(result)
+                    try:
+                        answer_for_client.send(result)
+                    except socket.error:
+                        clients.pop(clients.index((answer_for_client, addr)))
+                        errors_cycle_offset += 1
+            errors_cycle_offset = send_message_to_rest_of_adresses(errors_cycle_offset, result)
+
+
+def negative(x):
+    return -x
+
+
+def send_message_to_rest_of_adresses(errors_cycle_offset, result):
+    for client_index in range(errors_cycle_offset):
+        try:
+            client, addr = clients[negative(client_index+1)]
+            client.send(result)
+        except BaseException as message:
+            print(message)
+    return 0
 
 
 ioloop = asyncio.get_event_loop()
 tasks = [ioloop.create_task(check_new_connections()), ioloop.create_task(check_new_requests())]
 wait_tasks = asyncio.wait(tasks)
-ioloop.run_until_complete(wait_tasks)
-ioloop.close()
+try:
+    ioloop.run_until_complete(wait_tasks)
+    ioloop.close()
+except KeyboardInterrupt:
+    sock.close()
+    print('Server is down')
