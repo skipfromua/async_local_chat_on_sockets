@@ -1,8 +1,11 @@
 import socket
 import asyncio
+import sys
+
+print('Server hosted on: {}:{}'.format(sys.argv[1], sys.argv[2]))
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-sock.bind(('127.0.0.1', 5000))
+sock.bind((sys.argv[1], int(sys.argv[2])))  # HOST and PORT
 sock.listen()
 sock.setblocking(False)
 
