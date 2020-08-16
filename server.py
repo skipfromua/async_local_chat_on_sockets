@@ -1,6 +1,5 @@
 import socket
 import asyncio
-from time import sleep
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 sock.bind(('127.0.0.1', 5004))
@@ -29,7 +28,6 @@ async def check_new_requests():
                 result = client.recv(4096)
                 client_addr = addr
             except socket.error:
-                print('have clients')
                 await asyncio.sleep(0)
                 continue
             for answer_for_client, addr in clients:
