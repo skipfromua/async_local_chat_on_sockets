@@ -2,6 +2,7 @@ import socket
 import asyncio
 import sys
 
+QUIT_CODE = 'v4y8374y298909120nvm,s'
 print('Server hosted on: {}:{}'.format(sys.argv[1], sys.argv[2]))
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -31,6 +32,8 @@ async def check_new_requests():
         for client, addr in clients:
             try:
                 result = client.recv(4096)
+                if result.decode() == QUIT_CODE:
+                    clients.pop(clients.index((client, addr)))
                 client_addr = addr
             except socket.error:
                 await asyncio.sleep(0)
